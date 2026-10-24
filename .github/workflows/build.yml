@@ -1,37 +1,20 @@
-name: Build APK
-on: [push, workflow_dispatch]
-
+name: build
+on: workflow_dispatch
 jobs:
-  build:
+  apk:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-
-    - name: Set up JDK 17
-      uses: actions/setup-java@v5
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v4
-
-    - name: Install NDK and Tools
-      run: |
-        yes | sdkmanager --licenses
-        sdkmanager "platform-tools" "build-tools;33.0.2" "platforms;android-33" "ndk;25.2.9519653"
-
-    - name: Download Gradle Manually
-      run: |
-        wget https://services.gradle.org/distributions/gradle-8.1.1-bin.zip
-        unzip -q gradle-8.1.1-bin.zip
-        echo "$PWD/gradle-8.1.1/bin" >> $GITHUB_PATH
-
-    - name: Build with Gradle
-      run: gradle assembleDebug
-
-    - name: Upload APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: FF_Hack_APK
-        path: app/build/outputs/apk/debug/app-debug.apk
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: 8.5
+      - run: gradle assembleDebug --no-daemon
+      - uses: actions/upload-artifact@v4
+        with:
+          name: app-debug
+          path: app/build/outputs/apk/debug/app-debug.apk
