@@ -13,11 +13,17 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
     
-    - name: Setup Android SDK and NDK
+    - name: Setup Android SDK (Base)
       uses: android-actions/setup-android@v4
-      with:
-        # Instala o SDK, Build Tools e o NDK necessário para o C++
-        packages: 'platform-tools;build-tools;33.0.2;platforms;android-33;ndk;25.2.9519653'
+      # Não passamos 'packages' aqui para evitar o erro do pacote 'tools'
+      
+    - name: Install Build Tools, Platform and NDK
+      run: |
+        # Instala os pacotes necessários um por um para evitar erros de parsing
+        sdkmanager "platform-tools"
+        sdkmanager "build-tools;33.0.2"
+        sdkmanager "platforms;android-33"
+        sdkmanager "ndk;25.2.9519653"
         
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3
@@ -26,7 +32,6 @@ jobs:
         
     - name: Build with Gradle
       run: |
-        # Roda o Gradle diretamente, sem precisar do wrapper
         gradle assembleDebug
         
     - name: Upload APK
