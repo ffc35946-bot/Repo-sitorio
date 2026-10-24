@@ -1,5 +1,6 @@
 name: Build APK
 on: [push, workflow_dispatch]
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -12,16 +13,21 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
     
-    - name: Setup Android SDK
+    - name: Setup Android SDK and NDK
       uses: android-actions/setup-android@v4
       with:
-        packages: 'platform-tools' # A MÁGICA ACONTECE AQUI
+        # Instala o SDK, Build Tools e o NDK necessário para o C++
+        packages: 'platform-tools;build-tools;33.0.2;platforms;android-33;ndk;25.2.9519653'
+        
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v3
+      with:
+        gradle-version: 8.1.0
         
     - name: Build with Gradle
       run: |
-        gradle wrapper --gradle-version 8.1.0
-        chmod +x gradlew
-        ./gradlew assembleDebug
+        # Roda o Gradle diretamente, sem precisar do wrapper
+        gradle assembleDebug
         
     - name: Upload APK
       uses: actions/upload-artifact@v4
