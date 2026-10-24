@@ -15,11 +15,9 @@ jobs:
     
     - name: Setup Android SDK (Base)
       uses: android-actions/setup-android@v4
-      # Não passamos 'packages' aqui para evitar o erro do pacote 'tools'
       
     - name: Install Build Tools, Platform and NDK
       run: |
-        # Instala os pacotes necessários um por um para evitar erros de parsing
         sdkmanager "platform-tools"
         sdkmanager "build-tools;33.0.2"
         sdkmanager "platforms;android-33"
@@ -28,10 +26,11 @@ jobs:
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3
       with:
-        gradle-version: 8.1.0
+        gradle-version: 8.1.1 # CORRIGIDO AQUI (8.1.1 em vez de 8.1.0)
         
     - name: Build with Gradle
       run: |
+        # O comando 'gradle' agora está disponível globalmente
         gradle assembleDebug
         
     - name: Upload APK
